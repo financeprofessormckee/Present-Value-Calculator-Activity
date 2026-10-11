@@ -1,0 +1,6 @@
+{
+  "name": "present-value-calculator-activity",
+  "private": true,
+  "scripts": { "test": "node tests/model-tests.cjs", "test:browser": "node tests/browser-tests.cjs" },
+  "devDependencies": { "playwright": "1.62.1", "axe-core": "4.11.0" }
+}

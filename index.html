@@ -40,9 +40,12 @@
     <section class="panel" aria-labelledby="timeline-heading">
       <h2 id="timeline-heading">Payments and their present-value shadows</h2>
       <div class="legend"><span><i class="outline-key" aria-hidden="true"></i> Outline: face amount</span><span><i class="hatch-key" aria-hidden="true"></i> Hatching: discounted amount</span><span>Above zero: receipts · Below zero: outflows</span></div>
-      <svg id="graph" role="img" aria-labelledby="timeline-heading" aria-describedby="graph-summary" xmlns="http://www.w3.org/2000/svg"></svg>
+      <p id="draft-notice" class="draft-notice" hidden>Some entries need correction. The graph, totals, and formula use the last valid values for those entries.</p>
+      <div class="graph-scroll" role="region" aria-label="Payment timeline, scroll horizontally if needed" tabindex="0">
+        <svg id="graph" role="img" aria-labelledby="timeline-heading" aria-describedby="graph-summary" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
       <p id="graph-summary" class="sr-only"></p>
-      <p class="graph-help">Bar numbers match the table. The left stacks use the same dollar scale as the bars. Close dates are offset slightly for visibility; the table gives their exact year.</p>
+      <p class="graph-help">Bar numbers match the table. The left stacks use the same dollar scale as the bars. Crowded bars are spread apart; dotted stems point to their exact years. The dollar scale adjusts to the payments. On a small screen, scroll the graph sideways or use the table. Press Escape to cancel a drag.</p>
       <div class="totals">
         <div><span>Discounted receipts</span><strong id="receipts"></strong></div>
         <div><span>Discounted outflows</span><strong id="outflows"></strong></div>
@@ -72,6 +75,7 @@
       <p id="prompt-feedback"></p>
     </section>
     <p id="live" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+    <noscript><p class="notice">This interactive calculator needs JavaScript. Enable it in your browser to edit payments and calculate present values.</p></noscript>
     <section aria-labelledby="resources-heading">
       <h2 id="resources-heading">Project notes</h2>
       <ul class="resources">

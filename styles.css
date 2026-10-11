@@ -3,7 +3,7 @@
 body { margin: 0; line-height: 1.65; }
 a { color: #5c0025; text-underline-offset: 0.18em; }
 a:hover { text-decoration-thickness: 2px; }
-a:focus-visible, main:focus-visible, button:focus-visible, input:focus-visible, .table-scroll:focus-visible { outline: 3px solid #5c0025; outline-offset: 4px; }
+a:focus-visible, main:focus-visible, button:focus-visible, input:focus-visible, .table-scroll:focus-visible, .graph-scroll:focus-visible { outline: 3px solid #5c0025; outline-offset: 4px; }
 .skip-link { position: absolute; top: -8rem; left: 1rem; z-index: 10; padding: 0.7rem 1rem; background: #fff; border: 2px solid #5c0025; }
 .skip-link:focus { top: 1rem; }
 main, footer { width: min(100% - 2rem, 72rem); margin-inline: auto; }
@@ -39,7 +39,14 @@ label { display: block; font-weight: 600; }
 .legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
 .outline-key, .hatch-key { display: inline-block; width: 20px; height: 20px; border: 2px solid #1a5a9e; }
 .hatch-key { background: repeating-linear-gradient(135deg, #fff 0px, #fff 4px, #1a5a9e 4px, #1a5a9e 6px); }
-#graph { display: block; width: 100%; height: auto; margin-top: 0.5rem; touch-action: pan-y; user-select: none; }
+.graph-scroll { overflow-x: auto; }
+#graph { display: block; width: 100%; min-width: 760px; height: auto; margin-top: 0.5rem; touch-action: pan-y; user-select: none; }
+#graph .date-stem { stroke: #767676; stroke-dasharray: 3 3; fill: none; pointer-events: none; }
+#graph .zero-marker { stroke: currentColor; stroke-width: 3; }
+#graph .payment-bar { cursor: ew-resize; }
+#graph .selected .zero-marker { stroke: #5c0025; stroke-width: 5; }
+.draft-notice { padding: 0.75rem; border-left: 4px solid #9a3400; background: #fff4e9; }
+.print-only { display: none; }
 #graph text { fill: #2a2a2a; font-family: inherit; }
 #graph .tick { font-size: 16px; text-anchor: middle; }
 #graph .dollar-tick { text-anchor: end; }
@@ -75,3 +82,7 @@ td[data-pv] { white-space: nowrap; }
 @media (max-width: 700px) { .totals { grid-template-columns: 1fr; } .panel { padding: 0.9rem; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
 @media print { button, .rate-controls, .actions, .prompt-buttons { display: none; } .table-scroll { overflow: visible; } .panel { break-inside: avoid; } }
+@media print { .print-only { display: inline; } .graph-scroll { overflow: visible; } #graph { min-width: 0; } }
+
+/* Preserve selected-state contrast when pointer hover also applies. */
+button[aria-pressed="true"]:hover:not(:disabled) { background:#740f38; color:#fff; }

@@ -4,7 +4,8 @@
   var M = window.PresentValueModel, G = window.PresentValueGraph;
   var state = M.initial(), selected = 'p1', nextId = 5, activePrompt = '', drag = null;
   var $ = id => document.getElementById(id);
-  var money = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Math.abs(n) < 0.00000001 ? 0 : n);
+  var currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+  var money = n => currency.format(Math.abs(n) < 0.005 ? 0 : n);
   var descriptions = {
     earlier: ['Move the payment earlier than year 5. Keep its amount and the 10% rate.', 'A positive payment received earlier has a greater present value at a positive rate.'],
     rate: ['Raise the rate above 10%. Keep the $1,000 payment at year 5.', 'A higher discount rate lowers the present value of a future receipt.'],
@@ -15,19 +16,21 @@
   function error(input, message) {
     input.setAttribute('aria-invalid', message ? 'true' : 'false');
     $(input.id+'-error').textContent = message;
+    $('draft-notice').hidden = !document.querySelector('input[aria-invalid="true"]');
   }
   function clearPrompt() { if (activePrompt) $('prompt-feedback').textContent = 'Not yet checked. '+descriptions[activePrompt][0]; }
   function buildTable(preserve) {
     var drafts = new Map();
     if (preserve !== false) $('payments-body').querySelectorAll('input[aria-invalid="true"]').forEach(input => drafts.set(input.id, { value:input.value, error:$(input.id+'-error').textContent }));
     $('payments-body').innerHTML = state.payments.map((p,i) => '<tr data-id="'+p.id+'">'+
-      '<th scope="row"><button type="button" data-select="'+p.id+'" aria-label="Select payment '+(i+1)+'">Payment '+(i+1)+'</button></th>'+
+      '<th scope="row"><span class="print-only">Payment '+(i+1)+'</span><button type="button" data-select="'+p.id+'" aria-label="Select payment '+(i+1)+'">Payment '+(i+1)+'</button></th>'+
       '<td><label class="sr-only" for="amount-'+p.id+'">Payment '+(i+1)+' amount in dollars</label><input id="amount-'+p.id+'" data-kind="amount" data-id="'+p.id+'" type="number" min="-10000" max="10000" step="0.01" aria-describedby="amount-'+p.id+'-error"><span class="error" id="amount-'+p.id+'-error"></span></td>'+
       '<td><label class="sr-only" for="year-'+p.id+'">Payment '+(i+1)+' year</label><input id="year-'+p.id+'" data-kind="year" data-id="'+p.id+'" type="number" min="0" max="30" step="1" aria-describedby="year-'+p.id+'-error"><span class="error" id="year-'+p.id+'-error"></span></td>'+
       '<td data-factor="'+p.id+'"></td><td data-pv="'+p.id+'"></td></tr>').join('');
     drafts.forEach(function(draft,id) { var input = $(id); if (input) { input.value = draft.value; error(input,draft.error); } });
   }
   function render() {
+    $('draft-notice').hidden = !document.querySelector('input[aria-invalid="true"]');
     var result = M.calculate(state), p = result.payments.find(p => p.id === selected);
     result.payments.forEach(function (p) {
       var row = $('payments-body').querySelector('[data-id="'+p.id+'"]');
@@ -56,11 +59,12 @@
   function select(id) { selected = id; render(); announce($('selection').textContent); }
   function updateInput(input) {
     var kind = input.dataset.kind || 'rate', message = M.validate(input.value,kind);
+    clearPrompt();
     error(input,message);
     if (message) { announce(message+' The chart keeps the last valid calculation.'); return false; }
     if (kind === 'rate') state.rate = Number(input.value);
     else state.payments.find(p => p.id === input.dataset.id)[kind] = Number(input.value);
-    clearPrompt(); render(); return true;
+    render(); return true;
   }
   function move(year) {
     state.payments.find(p => p.id === selected).year = year;
@@ -92,21 +96,32 @@
   });
   var svg = $('graph');
   svg.addEventListener('pointerdown',function(e) {
-    if (e.button !== 0) return;
+    if (e.button !== 0 || !e.isPrimary || drag) return;
     var group = e.target.closest('[data-payment]'); if (!group) return;
     selected = group.dataset.payment;
     var p = state.payments.find(p => p.id === selected);
-    drag = { id:selected, x:e.clientX, startYear:p.year, startPointerYear:G.yearAt(svg,e.clientX), moved:false };
+    drag = { id:selected, pointerId:e.pointerId, x:e.clientX, startYear:p.year, startPointerYear:G.yearAt(svg,e.clientX), moved:false };
     svg.setPointerCapture(e.pointerId); render();
   });
   svg.addEventListener('pointermove',function(e) {
     if (!drag || !svg.hasPointerCapture(e.pointerId)) return;
     if (Math.abs(e.clientX-drag.x) < 4 && !drag.moved) return;
     drag.moved = true;
-    move(Math.max(0,Math.min(30,drag.startYear+G.yearAt(svg,e.clientX)-drag.startPointerYear)));
+    var year = Math.max(0,Math.min(30,Math.round(drag.startYear+G.yearAt(svg,e.clientX)-drag.startPointerYear)));
+    if (year !== state.payments.find(p => p.id === selected).year) move(year);
   });
-  function finishDrag(e) { if (!drag) return; drag = null; if (svg.hasPointerCapture(e.pointerId)) svg.releasePointerCapture(e.pointerId); announce($('selection').textContent); }
+  function finishDrag(e) {
+    if (!drag || e.pointerId !== drag.pointerId) return;
+    var previous = drag; drag = null;
+    if (e.type === 'pointercancel' || e.type === 'keydown') move(previous.startYear);
+    if (svg.hasPointerCapture(previous.pointerId)) svg.releasePointerCapture(previous.pointerId);
+    announce($('selection').textContent);
+  }
   svg.addEventListener('pointerup',finishDrag);
   svg.addEventListener('pointercancel',finishDrag);
+  svg.addEventListener('lostpointercapture',finishDrag);
+  document.addEventListener('keydown',function(e) {
+    if (e.key === 'Escape' && drag) { e.preventDefault(); finishDrag({ type:'keydown', pointerId:drag.pointerId }); }
+  });
   buildTable(); render();
 })();
