@@ -21,66 +21,79 @@
     <div class="cob-brand__rule" aria-hidden="true"></div>
   </header>
   <main id="main" tabindex="-1">
-    <p class="eyebrow">Friedman Economic Games · Proposal 24</p>
-    <h1>Present Value Visual Calculator</h1>
-    <p class="intro">What are future payments worth today? Move them through time, change the interest rate, and watch their present values add up.</p>
-    <section class="instructions" aria-labelledby="instructions-heading">
-      <h2 id="instructions-heading">Explore the payments</h2>
-      <p>Positive amounts are receipts; negative amounts are outflows. Year 0 means today. Edit the table, or select a payment and use Earlier/Later. You can also drag a bar horizontally to change its date. The rate is an effective annual rate, compounded once per year.</p>
-      <p>The starting example pays $2,000 today and receives $1,000 in each of the next three years. Compare the discounted receipts with the outflow to find the net present value.</p>
-    </section>
-    <section class="panel" aria-labelledby="rate-heading">
-      <h2 id="rate-heading">Annual interest rate</h2>
-      <div class="rate-controls">
-        <div><label for="rate-number">Rate (%)</label><input id="rate-number" type="number" min="0" max="25" step="0.1" aria-describedby="rate-help rate-number-error"><span id="rate-number-error" class="error"></span></div>
-        <div class="range-control"><label for="rate-range">Adjust rate (0–25%)</label><input id="rate-range" type="range" min="0" max="25" step="0.1" aria-describedby="rate-help"></div>
+    <div class="hero">
+      <div><p class="eyebrow">Friedman Economic Games · Proposal 24</p>
+        <h1>Present Value<br><span>Visual Calculator</span></h1>
+        <p class="intro">Move a payment through time. See what it is worth today.</p>
       </div>
-      <p id="rate-help">Whole years 0–30; annual rate 0–25%. Present value = amount ÷ (1 + rate / 100)<sup>year</sup>.</p>
-    </section>
-    <section class="panel" aria-labelledby="timeline-heading">
-      <h2 id="timeline-heading">Payments and their present-value shadows</h2>
-      <div class="legend"><span><i class="outline-key" aria-hidden="true"></i> Outline: face amount</span><span><i class="hatch-key" aria-hidden="true"></i> Hatching: discounted amount</span><span>Above zero: receipts · Below zero: outflows</span></div>
-      <svg id="graph" role="img" aria-labelledby="timeline-heading" aria-describedby="graph-summary" xmlns="http://www.w3.org/2000/svg"></svg>
-      <p id="graph-summary" class="sr-only"></p>
-      <p class="graph-help">Bar numbers match the table. The left stacks use the same dollar scale as the bars. Close dates are offset slightly for visibility; the table gives their exact year.</p>
-      <div class="totals">
-        <div><span>Discounted receipts</span><strong id="receipts"></strong></div>
-        <div><span>Discounted outflows</span><strong id="outflows"></strong></div>
-        <div class="net-total"><span>Net present value</span><strong id="net"></strong></div>
-      </div>
+      <div class="hero-note"><span class="step-label">STARTING EXAMPLE</span><p>Pay $2,000 today.<br>Receive $1,000 in each of the next three years.<br><strong>What is the difference worth now?</strong></p></div>
+    </div>
+    <details class="orientation">
+      <summary>How to read this experiment</summary>
+      <p>Positive amounts are receipts; negative amounts are outflows. Year 0 is today. The rate is an effective annual rate, compounded once per year. An outline shows a payment's face amount; hatching shows its present value. The shadows at the left add those values on the same dollar scale.</p>
+      <p>Select a payment in the table or graph. Edit its amount or year in the table, use Earlier/Later, or drag its bar horizontally. Press Escape to cancel a drag. Amounts run from −$10,000 to $10,000 in cents; years from 0 to 30; annual rates from 0 to 25%. All calculations retain full precision.</p>
+    </details>
+    <div class="experiment-toolbar" aria-label="Experiment tools">
+      <div class="actions"><button id="undo" type="button" disabled>Undo</button><button id="redo" type="button" disabled>Redo</button><button id="reset" type="button">Reset example</button></div>
+      <div class="actions"><button id="save-comparison" type="button">Save comparison</button><button id="export" type="button">Export CSV</button><button id="print" type="button">Print worksheet</button></div>
+    </div>
+    <p id="draft-notice" class="draft-notice" hidden>Some entries need correction. The graph, totals, and formula use the last valid values for those entries.</p>
+    <div class="totals" aria-label="Present-value totals">
+      <div class="net-total"><span>Net present value</span><strong id="net"></strong><small>Discounted receipts − discounted outflows</small></div>
+      <div><span>Discounted receipts</span><strong id="receipts"></strong><small>Money coming in, valued today</small></div>
+      <div><span>Discounted outflows</span><strong id="outflows"></strong><small>Money going out, as a positive magnitude</small></div>
+    </div>
+    <div class="workspace">
+      <section class="panel chart-panel" aria-labelledby="timeline-heading">
+        <div class="panel-heading"><div><p class="step-label">01 / SEE THE CASH FLOWS</p><h2 id="timeline-heading">From future payments to today's value</h2></div></div>
+        <div class="graph-tools"><fieldset><legend>Timeline</legend><div class="segmented"><button id="fit-timeline" type="button" aria-pressed="true">Fit payments</button><button id="full-timeline" type="button" aria-pressed="false">All 30 years</button></div></fieldset>
+          <label class="check-label"><input id="lock-scale" type="checkbox"> Keep dollar scale fixed</label></div>
+        <div class="legend"><span><i class="outline-key" aria-hidden="true"></i> Face amount</span><span><i class="hatch-key" aria-hidden="true"></i> Present value</span></div>
+        <div class="graph-scroll" role="region" aria-label="Payment timeline, scroll horizontally if needed" tabindex="0"><svg id="graph" role="img" aria-labelledby="timeline-heading" aria-describedby="graph-summary" xmlns="http://www.w3.org/2000/svg"></svg></div>
+        <p id="graph-summary" class="sr-only"></p>
+        <p id="scale-note" class="graph-help"></p>
+        <p class="graph-help">Numbers match the table. Above zero: receipts; below zero: outflows. Dotted stems mark exact dates when bars are spread apart. Scroll sideways on a small screen; the table provides all values.</p>
+      </section>
+      <aside class="controls-column" aria-label="Experiment controls">
+        <section class="panel" aria-labelledby="rate-heading">
+          <p class="step-label">02 / CHANGE THE RATE</p><h2 id="rate-heading">Annual interest rate</h2>
+          <div class="rate-controls"><div><label for="rate-number">Rate (%)</label><input id="rate-number" type="number" min="0" max="25" step="0.1" aria-describedby="rate-help rate-number-error"><span id="rate-number-error" class="error"></span></div>
+            <div class="range-control"><label for="rate-range">Adjust rate (0–25%)</label><input id="rate-range" type="range" min="0" max="25" step="0.1" aria-describedby="rate-help"></div></div>
+          <p id="rate-help">Try changing just the rate. Which payment is affected most?</p>
+        </section>
+        <section class="panel selected-panel" aria-labelledby="selected-heading">
+          <p class="step-label">03 / FOLLOW ONE PAYMENT</p><h2 id="selected-heading">Selected payment</h2>
+          <p id="selection"></p><div class="actions"><button id="earlier" type="button">Earlier (−1 year)</button><button id="later" type="button">Later (+1 year)</button><button id="edit-selected" type="button">Edit amount</button></div>
+          <p id="formula" class="formula"></p><p id="discount-note"></p>
+        </section>
+      </aside>
+    </div>
+    <section id="comparison" class="panel comparison" aria-labelledby="comparison-heading" hidden>
+      <div class="panel-heading"><div><p class="step-label">YOUR BEFORE / AFTER</p><h2 id="comparison-heading">Compare this experiment</h2></div><div class="actions"><button id="restore-comparison" type="button">Restore saved</button><button id="clear-comparison" type="button">Clear comparison</button></div></div>
+      <p id="comparison-summary"></p><div class="table-scroll" role="region" aria-label="Comparison results, scroll horizontally if needed" tabindex="0"><table><caption class="sr-only">Saved and current cash-flow totals</caption><thead><tr><th scope="col">Measure</th><th scope="col">Saved</th><th scope="col">Current</th><th scope="col">Change</th></tr></thead><tbody id="comparison-body"></tbody></table></div>
+      <details><summary>Saved payment schedule</summary><p id="saved-schedule"></p></details><p class="graph-help">The comparison lasts for this open page only. Saving again replaces it.</p>
     </section>
     <section class="panel" aria-labelledby="payments-heading">
-      <h2 id="payments-heading">Cash-flow table</h2>
-      <p id="table-help">Choose a payment with its Select button. Amounts may range from −$10,000 to $10,000 in cents. You can keep 1–12 payments, including zero amounts and several payments in the same year. Factors are shown to six decimals; totals use full precision.</p>
-      <div class="table-scroll" role="region" aria-label="Cash-flow table, scroll horizontally if needed" tabindex="0">
-        <table aria-describedby="table-help">
-          <caption class="sr-only">Editable payments and calculated present values</caption>
-          <thead><tr><th scope="col">Select</th><th scope="col">Amount ($)</th><th scope="col">Year</th><th scope="col">Discount factor</th><th scope="col">Present value</th></tr></thead>
-          <tbody id="payments-body"></tbody>
-        </table>
-      </div>
-      <p id="selection"></p>
-      <div class="actions"><button id="earlier" type="button">Earlier (−1 year)</button><button id="later" type="button">Later (+1 year)</button><button id="add" type="button">Add payment</button><button id="remove" type="button">Remove selected</button><button id="reset" type="button">Reset example</button></div>
-      <p id="formula" class="formula"></p>
+      <div class="panel-heading"><div><p class="step-label">THE NUMBERS BEHIND THE PICTURE</p><h2 id="payments-heading">Cash-flow table</h2></div><div class="actions"><button id="add" type="button">Add payment</button><button id="remove" type="button">Remove selected</button></div></div>
+      <p id="table-help">Select any payment to follow its shadow. Edit amounts in cents and dates in whole years. Keep 1–12 payments; zero amounts and shared dates are allowed. Factors display six decimals; totals use full precision.</p>
+      <div class="table-scroll" role="region" aria-label="Cash-flow table, scroll horizontally if needed" tabindex="0"><table aria-describedby="table-help"><caption class="sr-only">Editable payments and calculated present values</caption><thead><tr><th scope="col">Select</th><th scope="col">Amount ($)</th><th scope="col">Year</th><th scope="col">Discount factor</th><th scope="col">Present value</th></tr></thead><tbody id="payments-body"></tbody></table></div>
     </section>
-    <section class="panel" aria-labelledby="prompts-heading">
-      <h2 id="prompts-heading">Try a learning prompt</h2>
-      <p>Optional, with no score. Each Load button replaces the current payments with the prompt's starting example.</p>
-      <div class="prompt-buttons"><button type="button" data-prompt="earlier">Load: receive it earlier</button><button type="button" data-prompt="rate">Load: raise the rate</button><button type="button" data-prompt="zero">Load: zero interest</button><button type="button" data-prompt="cancel">Load: cancel payments</button></div>
-      <p id="prompt-instruction">Choose a prompt to load its starting example.</p>
-      <button id="check-prompt" type="button" disabled>Check this prompt</button>
-      <p id="prompt-feedback"></p>
+    <details class="panel sensitivity-panel">
+      <summary>What happens as the rate changes?</summary>
+      <p>Keep the current amounts and dates fixed. Each point shows the net present value at a different annual rate. Mixed receipts and outflows can make net PV rise, fall, or turn as the rate changes.</p>
+      <div class="sensitivity-scroll" role="region" aria-label="Rate sensitivity chart, scroll horizontally if needed" tabindex="0"><svg id="sensitivity" role="img" aria-label="Net present value across annual rates from 0 to 25 percent" aria-describedby="sensitivity-summary" xmlns="http://www.w3.org/2000/svg"></svg></div>
+      <p id="sensitivity-summary"></p><div class="table-scroll" role="region" aria-label="Rate sensitivity values, scroll horizontally if needed" tabindex="0"><table><caption>Selected rates, using the current payment schedule</caption><thead><tr><th scope="col">Annual rate</th><th scope="col">Net present value</th><th scope="col">Difference from current rate</th></tr></thead><tbody id="sensitivity-body"></tbody></table></div>
+    </details>
+    <section class="panel prompts-panel" aria-labelledby="prompts-heading">
+      <p class="step-label">PREDICT · CHANGE · EXPLAIN</p><h2 id="prompts-heading">Try a learning prompt</h2>
+      <p>Before changing anything, predict the result. These four experiments are optional and ungraded. Loading one replaces the payments; Undo brings your experiment back.</p>
+      <div class="prompt-buttons"><button type="button" data-prompt="earlier"><span>01</span>Load: receive it earlier</button><button type="button" data-prompt="rate"><span>02</span>Load: raise the rate</button><button type="button" data-prompt="zero"><span>03</span>Load: zero interest</button><button type="button" data-prompt="cancel"><span>04</span>Load: cancel payments</button></div>
+      <p id="prompt-instruction">Choose a prompt to load its starting example.</p><p id="prediction" class="prediction" hidden></p><button id="check-prompt" type="button" disabled>Check this prompt</button><p id="prompt-feedback"></p>
     </section>
     <p id="live" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
-    <section aria-labelledby="resources-heading">
-      <h2 id="resources-heading">Project notes</h2>
-      <ul class="resources">
-        <li><a href="README.md">Project overview</a></li>
-        <li><a href="SPECIFICATION.md">Browser specification</a></li>
-        <li><a href="http://daviddfriedman.com/Living_Paper/Program_Descriptions/program_descriptions.htm">Original program descriptions</a></li>
-      </ul>
-      <p>Review prototype, v1, pending David Friedman's review. Code is open source under the MIT License; the formal accessibility audit is still to be completed before teaching or publication use.</p>
-    </section>
+    <noscript><p class="notice">This interactive calculator needs JavaScript. Enable it in your browser to edit payments and calculate present values.</p></noscript>
+    <section class="print-only reflection"><h2>Explain what changed</h2><p>Prediction: ___________________________________________________________________</p><p>What I changed: ______________________________________________________________</p><p>What happened, and why: _______________________________________________________</p></section>
+    <section class="project-notes" aria-labelledby="resources-heading"><h2 id="resources-heading">Project notes</h2><ul class="resources"><li><a href="README.md">Project overview</a></li><li><a href="SPECIFICATION.md">Browser specification</a></li><li><a href="REVIEW.md">Proposal and review</a></li><li><a href="http://daviddfriedman.com/Living_Paper/Program_Descriptions/program_descriptions.htm">Original program descriptions</a></li></ul><p>Proposed learning-lab version of the review prototype; pending David Friedman's review. MIT-licensed code. Formal accessibility review remains outstanding.</p></section>
   </main>
   <footer>
     <p>Economic concepts: David Friedman. Development: Eric McKee.</p>
@@ -88,6 +101,7 @@
   </footer>
   <script src="js/model.js"></script>
   <script src="js/graph.js"></script>
+  <script src="js/lab.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

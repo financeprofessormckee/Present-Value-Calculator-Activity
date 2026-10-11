@@ -8,6 +8,7 @@
   'use strict';
   var LIMITS = { minPayments: 1, maxPayments: 12, amountMax: 10000, yearMax: 30, rateMax: 25 };
   function validate(value, kind) {
+    if (typeof value !== 'number' && typeof value !== 'string') return 'Enter a number.';
     if (value === null || value === undefined || String(value).trim() === '' || !Number.isFinite(Number(value))) return 'Enter a number.';
     var n = Number(value);
     if (kind === 'amount') {

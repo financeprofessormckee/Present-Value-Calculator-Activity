@@ -2,7 +2,9 @@
 
 **[Click Here to Launch the Interactive Activity](https://financeprofessormckee.github.io/Present-Value-Calculator-Activity/)**
 
-> **Status:** v1 prototype under review with David Friedman. Not yet accessibility-audited
+> **This branch:** proposed learning-lab alternative; see [REVIEW.md](REVIEW.md) for findings, features, checks, and limitations.
+
+> **Status of upstream v1:** v1 prototype under review with David Friedman. Not yet accessibility-audited
 > for teaching release.
 
 Make discounting and the addition of dated cash flows visible. Students edit receipts and outflows, move payments earlier or later, and change the annual rate. Outlined bars show face amounts; hatched bars show present values. A table, signed totals, and a worked formula give the same results numerically.
@@ -25,7 +27,7 @@ The full model, its adaptations from Friedman's description, and acceptance case
 ### Running it locally
 
 Open `index.html` in a browser. There's no build step, installation, or server, and
-everything is local. Model tests run with Node: `node tests/model-tests.cjs`.
+everything is local. Model and experiment-tool tests run with `npm test` (no install needed for those tests). Optional browser checks use `npm ci`, `npx playwright install chromium`, then `npm run test:browser`.
 
 ### License and Citation
 

@@ -58,3 +58,7 @@ for(const id of ['earlier','rate','zero','cancel']) {
 }
 const a=M.initial(); a.payments[0].amount=7; ok(M.initial().payments[0].amount===-2000,'Fresh defaults');
 console.log(checks+' model checks, 0 failures');
+for (const kind of ['amount','year','rate']) for (const value of [true,false,[],[1],{}]) {
+  if (!M.validate(value,kind)) throw new Error('Reject nonnumeric type: '+kind);
+}
+console.log('15 additional input-type checks, 0 failures');
